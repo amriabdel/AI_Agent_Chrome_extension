@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "TaskPilot",
+  "version": "1.0",
+  "description": "Launch browser tasks from natural language using a Python backend and real-time Chrome orchestration.",
+  "permissions": ["scripting","tabs","activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Run Python Bridge",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
