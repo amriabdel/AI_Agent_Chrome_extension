@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "TaskPilot",
+  "name": "Chrome AI Agent",
   "version": "1.0",
   "description": "Launch browser tasks from natural language using a Python backend and real-time Chrome orchestration.",
   "permissions": ["scripting","tabs","activeTab"],
   "host_permissions": ["<all_urls>"],
   "action": {
-    "default_title": "Run Python Bridge",
+    "default_title": "Run Chrome AI Agent",
     "default_icon": {
       "16": "icon.png",
       "48": "icon.png",

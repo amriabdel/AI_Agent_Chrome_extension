@@ -4,13 +4,13 @@ import re
 import requests
 from dotenv import load_dotenv
 
+from agent_utils import log_info, log_debug, log_error
+
+# Load environment variables
 load_dotenv()
 MISTRAL_API_KEY = os.getenv("LLM_API_KEY")
 
-def log_info(msg): print(f"[INFO] {msg}")
-def log_debug(msg): print(f"[DEBUG] {msg}")
-def log_error(msg): print(f"[ERROR] {msg}")
-
+# Sends a user task to LLM and parses the JSON plan from its response
 def parse_task(task: str) -> dict:
     log_info(f"Parsing task: {task}")
     prompt = f"""You are a browser automation agent. Given a user task, output a JSON plan of browser actions.Respond ONLY with valid JSON
@@ -39,18 +39,16 @@ Respond with JSON like:
     {{"type": "click", "selector": "button[type='submit']"}}
   ]
 }}"""
-
+    # API request setup
     headers = {
         "Authorization": f"Bearer {MISTRAL_API_KEY}",
         "Content-Type": "application/json"
     }
-
     payload = {
         "model": "mistral-medium", 
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1
     }
-
     response = requests.post(
         "https://api.mistral.ai/v1/chat/completions",
         headers=headers,
@@ -58,13 +56,17 @@ Respond with JSON like:
     )
 
     try:
+        # Send request to Mistral API
         response = requests.post(
             url="https://api.mistral.ai/v1/chat/completions",
             headers=headers,
             data=json.dumps(payload)
         )
+
         print("🔍 Full LLM response:", response.json())
         response.raise_for_status()
+
+        # Extract and clean response
         content = response.json()["choices"][0]["message"]["content"]
         log_debug(f"LLM response: {content}")
         cleaned = re.sub(r"^```(?:json)?\n|\n```$", "", content.strip())

@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
-# Allow Chrome Extension to access this server
+# Enable CORS so the Chrome Extension can access this server
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Or restrict to your extension ID
@@ -12,23 +12,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-latest_plan = None  
+# In-memory store for the latest plan
+stored_plan = None  
 
+# Receive a plan from the agent
 @app.post("/plan")
 async def receive_plan(request: Request):
-    global latest_plan
-    latest_plan = await request.json()
-    print("📦 Received plan:", latest_plan)
+    global stored_plan
+    stored_plan = await request.json()
+    print("Received plan:", stored_plan)
     return JSONResponse(content={"status": "success"})
 
+# Serve the stored plan to the Chrome Extension
 @app.get("/plan")
 def send_plan():
-    return latest_plan or {"status": "no plan yet"}
+    return stored_plan or {"status": "no plan yet"}
 
-
+# Clear the stored plan
 @app.delete("/plan")
 def clear_plan():
-    global latest_plan
-    latest_plan = None
+    global stored_plan
+    stored_plan = None
     print("🧹 Cleared plan")
     return JSONResponse(content={"status": "deleted"})

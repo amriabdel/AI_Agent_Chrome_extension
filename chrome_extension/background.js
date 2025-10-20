@@ -1,3 +1,4 @@
+// Wait for tab to finish loading
 function waitForTabLoad(tabId) {
   return new Promise(resolve => {
     const listener = (updatedTabId, info) => {
@@ -10,6 +11,7 @@ function waitForTabLoad(tabId) {
   });
 }
 
+// Execute a single browser action inside the tab
 function runAction(action) {
   const sleep = ms => new Promise(res => setTimeout(res, ms));
 
@@ -24,7 +26,6 @@ function runAction(action) {
   };
 
     const resolveSelector = (selector) => {
-
         return selector === "input[aria-label='Search mail']" || selector === "input[aria-label*='Search mail']" || selector === 'input[aria-label="Search in mail"]'
             ? "input[name='q']"
             : "input";
@@ -40,10 +41,10 @@ function runAction(action) {
         el.value = action.text;
         el.dispatchEvent(new Event("input", { bubbles: true }));
 
-        actiontype= action.selector;
+        actionselec= action.selector;
 
       } else if (action.type === 'click' ) {
-        const el = await waitForSelector(resolveSelector(actiontype));
+        const el = await waitForSelector(resolveSelector(actionselec || action.selector));
         el.focus();
         const eventOptions = {
           key: "Enter",
@@ -70,9 +71,8 @@ function runAction(action) {
 
 let lastPlanHash = null;
 
-// Poll every second
+// Poll bridge server for new plans
 setInterval(pollForPlan, 1000);
-
 async function pollForPlan() {
   try {
     console.log("🕵️ Polling bridge...");
@@ -91,7 +91,7 @@ async function pollForPlan() {
       console.log("🚀 Executing new plan:", plan);
       await executePlan(plan);
 
-      // Optional: clear the plan after execution
+      // Clear the plan after execution
       await fetch("http://localhost:3001/plan", { method: "DELETE" });
     }
   } catch (err) {
@@ -99,7 +99,7 @@ async function pollForPlan() {
   }
 }
 
-
+// Execute full plan in active tab
 async function executePlan(plan) {
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -120,6 +120,7 @@ async function executePlan(plan) {
   }
 }
 
+// Keep service worker alive
 function keepAlive() {
   setInterval(() => chrome.runtime.getPlatformInfo(() => {}), 20000);
 }
