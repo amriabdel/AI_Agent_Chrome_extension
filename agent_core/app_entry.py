@@ -1,16 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
 
 from agent_runner import parse_task
 from plan_sender import send_to_bridge
 
 app = FastAPI()
-
-# Input model for /task endpoint
-class TaskRequest(BaseModel):
-    task: str
 
 # Full agent flow: parse task → send to Chrome
 @app.post("/task")

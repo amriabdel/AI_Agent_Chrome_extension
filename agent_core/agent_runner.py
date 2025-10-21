@@ -49,11 +49,6 @@ Respond with JSON like:
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1
     }
-    response = requests.post(
-        "https://api.mistral.ai/v1/chat/completions",
-        headers=headers,
-        data=json.dumps(payload)
-    )
 
     try:
         # Send request to Mistral API
