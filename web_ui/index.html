@@ -2,66 +2,76 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Task Launcher</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-      max-width: 600px;
-      margin: auto;
-      text-align: center;
-    }
-    img {
-      width: 200px;
-      height: 200px;
-      object-fit: contain;
-      margin-bottom: 1rem;
-    }
-    h2 {
-      margin-bottom: 1rem;
-    }
-    form {
-      text-align: left;
-    }
-    input, button {
-      padding: 0.6rem;
-      font-size: 1rem;
-      width: 100%;
-      margin-top: 1rem;
-    }
-    #status {
-      margin-top: 1rem;
-      font-weight: bold;
-      text-align: left;
-    }
-  </style>
+  <title>AI Agent</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- App Icon -->
-  <img src="icon.png" alt="App Icon" />
+  <header>
+    <div class="logo">AI AGENT</div>
+    <nav>
+      <!-- <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Features</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul> -->
+    </nav>
+  </header>
 
-  <h2>Describe your browser task</h2>
+  <section class="hero">
+    <div class="hero-content">
+      <h1>AI Agent</h1>
+      <p>An intelligent assistant to help you with tasks</p>
+      <form id="taskForm">
+        <input type="text" id="taskInput" placeholder="Describe your task..." required />
+        <button type="submit">Write the Task</button>
+      </form>
+      <div id="status"></div>
+    </div>
+    <div class="hero-image">
+      <img src="ai_agent.png" alt="AI Agent Illustration" />
+    </div>
+  </section>
 
-  <form id="taskForm">
-    <input type="text" id="taskInput" placeholder="e.g. Open LinkedIn job page" required />
-    <button type="submit">Submit Task</button>
-  </form>
-
-  <div id="status"></div>
+  <section class="features">
+    <div class="feature">
+      <h3> Machine Learning</h3>
+      <p>AI Agent learns and adapts to your preferences</p>
+    </div>
+    <div class="feature">
+      <h3> Natural Language Processing</h3>
+      <p>Understand and generate human-like text</p>
+    </div>
+    <div class="feature">
+      <h3> Automation</h3>
+      <p>Automate repetitive tasks with ease</p>
+    </div>
+  </section>
 
   <script>
     document.getElementById("taskForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const task = document.getElementById("taskInput").value;
-      const res = await fetch("http://localhost:8000/task", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task })
-      });
-      const data = await res.json();
-      document.getElementById("status").textContent = data.status === "success"
-        ? "✅ Plan generated and linked!"
-        : "❌ Error: " + data.message;
+      const statusEl = document.getElementById("status");
+      statusEl.textContent = "⏳ Processing...";
+      statusEl.className = "";
+
+      try {
+        const res = await fetch("http://localhost:8000/task", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task })
+        });
+        const data = await res.json();
+        statusEl.textContent = data.status === "success"
+          ? "✅ Plan generated and linked!"
+          : "❌ Error: " + data.message;
+        statusEl.className = data.status === "success" ? "success" : "error";
+        document.getElementById("taskInput").value = "";
+      } catch (err) {
+        statusEl.textContent = "❌ Network error. Please try again.";
+        statusEl.className = "error";
+      }
     });
   </script>
 </body>
